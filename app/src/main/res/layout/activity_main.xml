@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center">
+
+    <Button
+        android:id="@+id/start_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="启动悬浮窗" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="光遇自动送火1.0 By 发光二极管\n本软件不会修改游戏内存，但只要使用第三方辅助工具都有封号的可能，继续使用即代表您知晓风险\n联系邮箱：ohayo@milkycandy.cn\n本工具完全免费"
+        android:textAlignment="center"
+        android:textSize="16sp" />
+</LinearLayout>
