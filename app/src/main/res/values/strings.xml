@@ -1,4 +1,23 @@
 <resources>
-    <string name="app_name">光遇自动送火</string>
-    <string name="accessibility_service_description">光遇自动送火 By发光二极管\n\n本软件没有联网权限，不会泄露您的隐私。\n\n联系邮箱ohayo@milkycandy.cn</string>
+    <string name="app_name">SkyAutoLightGift</string>
+    <string name="accessibility_service_description">This software does not have access to the Internet and will not disclose your privacy. Contact us at ohayo@milkycandy.cn</string>
+    <string name="send_fire_after_3s">3\n%1$s</string>
+    <string name="send_fire_after_2s">2\n%1$s</string>
+    <string name="send_fire_after_1s">1\n%1$s</string>
+    <string name="current_page_completed">This page is complete</string>
+    <string name="sending_fire_to">Sending fire for %1$s</string>
+    <string name="accessibility_service_not_available">Accessibility service is not available</string>
+    <string name="menu_entered_successfully_sending_fire">Menu access successful. Sending fire.</string>
+    <string name="failed_to_enter_menu">Failed to enter menu, skip %1$s </string>
+    <string name="clicking_send_fire_button">Try clicking on the Send Fire button</string>
+    <string name="still_in_menu">Still in the menu, trying to exit the menu</string>
+    <string name="require_floating_permission">Require Floating Window permission</string>
+    <string name="go_to_settings">Settings</string>
+    <string name="coordinate_saved">Coordinates saved</string>
+    <string name="require_accessibility_service">Requires accessibility permissions</string>
+    <string name="start">Start</string>
+    <string name="coordinate_of_send_fire">Screen coordinates for the fire button:</string>
+    <string name="save">Save</string>
+    <string name="app_disclaimer">Sky Auto Light Gift 1.0 By LED (my name)\nThis software will not modify the game memory, but as long as the use of third-party aids have the possibility of being banned, continue to use this tool means you accept the risk\nContact email: ohayo@milkycandy.cn\nThis tool is completely free.</string>
+    <string name="enter_coordinates_first">Please save the coordinates first</string>
 </resources>

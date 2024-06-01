@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">光遇自动送火</string>
+    <string name="accessibility_service_description">光遇自动送火 By发光二极管\n\n本软件没有联网权限，不会泄露您的隐私。\n\n联系邮箱ohayo@milkycandy.cn</string>
+    <string name="send_fire_after_3s">3秒后开始送火\n%1$s</string>
+    <string name="send_fire_after_2s">2秒后开始送火\n%1$s</string>
+    <string name="send_fire_after_1s">1秒后开始送火\n%1$s</string>
+    <string name="current_page_completed">本页已完成</string>
+    <string name="sending_fire_to">正在为 %1$s 送火</string>
+    <string name="accessibility_service_not_available">无障碍服务不可用</string>
+    <string name="menu_entered_successfully_sending_fire">菜单进入成功，正在送火</string>
+    <string name="failed_to_enter_menu">进入菜单失败，跳过 %1$s </string>
+    <string name="clicking_send_fire_button">尝试点击送火按钮</string>
+    <string name="still_in_menu">仍在菜单中，正在尝试退出菜单</string>
+    <string name="require_floating_permission">需要悬浮窗权限</string>
+    <string name="go_to_settings">去设置</string>
+    <string name="coordinate_saved">坐标已保存</string>
+    <string name="require_accessibility_service">需要无障碍权限</string>
+    <string name="start">启动悬浮窗</string>
+    <string name="coordinate_of_send_fire">送火键屏幕坐标：</string>
+    <string name="save">保存</string>
+    <string name="app_disclaimer">光遇自动送火1.0 By 发光二极管\n本软件不会修改游戏内存，但只要使用第三方辅助工具都有封号的可能，继续使用即代表您知晓风险\n联系邮箱：ohayo@milkycandy.cn\n本工具完全免费</string>
+    <string name="enter_coordinates_first">请先输入并保存坐标</string>
+</resources>

@@ -2,21 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="10dp">
+    android:orientation="vertical">
 
     <Button
         android:id="@+id/detect_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="检测" />
+        android:text="开始送火" />
 
     <TextView
         android:id="@+id/detected_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="textview"
+        android:text="请在星盘希望开始送火的页码开始"
         android:textColor="#FFFFFF"
-        android:textSize="12sp"
+        android:textSize="16sp"
         android:paddingTop="10dp"/>
 </LinearLayout>

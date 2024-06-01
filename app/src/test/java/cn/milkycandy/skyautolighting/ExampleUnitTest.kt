@@ -1,4 +1,4 @@
-package cn.milkycandy.skyautolightinggamepad
+package cn.milkycandy.skyautolighting
 
 import org.junit.Test
 

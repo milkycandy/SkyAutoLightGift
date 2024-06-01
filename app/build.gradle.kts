@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "cn.milkycandy.skyautolightinggamepad"
+    namespace = "cn.milkycandy.skyautolighting"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "cn.milkycandy.skyautolightinggamepad"
+        applicationId = "cn.milkycandy.skyautolighting"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

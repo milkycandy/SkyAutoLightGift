@@ -1,4 +1,4 @@
-package cn.milkycandy.skyautolightinggamepad
+package cn.milkycandy.skyautolighting
 
 import android.app.Service
 import android.content.Context
@@ -15,20 +15,22 @@ import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import java.lang.ref.WeakReference
 
+@Suppress("DEPRECATION")
 class FloatingWindowService : Service() {
 
     private lateinit var windowManager: WindowManager
     private lateinit var floatingView: View
     private lateinit var detectButton: Button
-    lateinit var detectedTextView: TextView
+    lateinit var textViewInfo: TextView
     private val handler = Handler()
 
     override fun onCreate() {
         super.onCreate()
 
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        floatingView = LayoutInflater.from(this).inflate(R.layout.floating_window, null)
+        floatingView = LayoutInflater.from(this).inflate(R.layout.floating_window, null, false)
 
         val layoutFlag = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
@@ -44,15 +46,15 @@ class FloatingWindowService : Service() {
             PixelFormat.TRANSLUCENT
         )
 
-        params.gravity = Gravity.TOP or Gravity.LEFT
+        params.gravity = Gravity.TOP or Gravity.START
         params.x = 0
         params.y = 100
 
         windowManager.addView(floatingView, params)
 
         detectButton = floatingView.findViewById(R.id.detect_button)
-        detectedTextView = floatingView.findViewById(R.id.detected_text)
-        instance = this
+        textViewInfo = floatingView.findViewById(R.id.detected_text)
+        serviceReference = WeakReference(this)
 
         detectButton.setOnClickListener {
             val accessibilityService = MyAccessibilityService.instance
@@ -61,18 +63,22 @@ class FloatingWindowService : Service() {
                 startCountdownAndClick(accessibilityService)
                 detectButton.visibility = View.GONE
             } else {
-                Toast.makeText(this, "无障碍服务不可用", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.accessibility_service_not_available), Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
 
     private fun startCountdownAndClick(service: MyAccessibilityService) {
-        val detectedTexts = service.targetNodes.joinToString(separator = "\n") { it.text.toString() }
-        detectedTextView.text = "3秒后开始送火\n$detectedTexts"
+        val detectedTexts =
+            service.targetNodes.joinToString(separator = "\n") { it.text.toString() }
+        textViewInfo.text = getString(R.string.send_fire_after_3s, detectedTexts)
         handler.postDelayed({
-            detectedTextView.text = "2秒后开始送火\n$detectedTexts"
+            textViewInfo.text = getString(R.string.send_fire_after_2s, detectedTexts)
             handler.postDelayed({
-                detectedTextView.text = "1秒后开始送火\n$detectedTexts"
+                textViewInfo.text = getString(R.string.send_fire_after_1s, detectedTexts)
                 handler.postDelayed({
                     clickAndCheck(service, 0)
                 }, 1000)
@@ -82,53 +88,58 @@ class FloatingWindowService : Service() {
 
     private fun clickAndCheck(service: MyAccessibilityService, index: Int) {
         if (index >= service.targetNodes.size) {
-            detectedTextView.text = "本页已完成"
+            textViewInfo.text = getString(R.string.current_page_completed)
             detectButton.visibility = View.VISIBLE
-
-                return
+            return
         }
 
         val node = service.targetNodes[index]
-        detectedTextView.text = "正在为 ${node.text} 送火"
+        textViewInfo.text = getString(R.string.sending_fire_to, node.text)
         Log.d("Lighting", "点击 ${node.text}")
         enterMenu(service, index, node, 1)
     }
 
-    private fun enterMenu(service: MyAccessibilityService, index: Int, node: AccessibilityNodeInfo, tryTimes: Int) {
+    // 这一段嵌套看起来相当诡异，不过能用，先不管了（也不知道怎么解决）
+    private fun enterMenu(
+        service: MyAccessibilityService,
+        index: Int,
+        node: AccessibilityNodeInfo,
+        tryTimes: Int
+    ) {
         service.clickNode(node)
         handler.postDelayed({
             if (service.checkIfOnlyText(node.text.toString())) {
-                // 送火
                 Log.d("Lighting", "菜单进入成功，正在送火")
-                detectedTextView.text = "正在为 ${node.text} 送火\n菜单进入成功，正在送火"
+                textViewInfo.text = "菜单进入成功，正在送火"
                 sendLight(service, node, index)
             } else {
                 Log.d("Lighting", "菜单进入失败，尝试点击左侧")
                 service.clickNodeLeftEdge(node)
                 handler.postDelayed({
                     if (service.checkIfOnlyText(node.text.toString())) {
-                        // 送火
                         Log.d("Lighting", "菜单进入成功，正在送火")
-                        detectedTextView.text = "正在为 ${node.text} 送火\n菜单进入成功，正在送火"
+                        textViewInfo.text =
+                            getString(R.string.menu_entered_successfully_sending_fire)
                         sendLight(service, node, index)
                     } else {
                         Log.d("Lighting", "菜单进入失败，尝试点击右侧")
                         service.clickNodeRightEdge(node)
                         handler.postDelayed({
                             if (service.checkIfOnlyText(node.text.toString())) {
-                                // 送火
                                 Log.d("Lighting", "菜单进入成功，正在送火")
-                                detectedTextView.text = "正在为 ${node.text} 送火\n菜单进入成功，正在送火"
+                                textViewInfo.text =
+                                    getString(R.string.menu_entered_successfully_sending_fire)
                                 sendLight(service, node, index)
                             } else {
                                 if (tryTimes < 3) {
-                                    val newTryTimes = tryTimes + 1;
+                                    val newTryTimes = tryTimes + 1
                                     Log.d("Lighting", "进入失败，即将尝试第 $newTryTimes 次")
                                     handler.postDelayed({
                                         enterMenu(service, index, node, newTryTimes)
                                     }, 1000)
                                 } else {
-                                    detectedTextView.text = "进入菜单失败，跳过 ${node.text} "
+                                    textViewInfo.text =
+                                        getString(R.string.failed_to_enter_menu, node.text)
                                     clickAndCheck(service, index + 1)
                                 }
                             }
@@ -139,27 +150,40 @@ class FloatingWindowService : Service() {
         }, 1000)
     }
 
-    private fun sendLight(service: MyAccessibilityService, nodeInfo: AccessibilityNodeInfo, index: Int) {
-        detectedTextView.text = "正在为 ${nodeInfo.text} 送火\n尝试点击送火按钮"
+    private fun sendLight(
+        service: MyAccessibilityService,
+        nodeInfo: AccessibilityNodeInfo,
+        index: Int
+    ) {
+        textViewInfo.text = getString(R.string.clicking_send_fire_button)
         handler.postDelayed({
             Log.d("Lighting", "尝试点击送火按钮")
-
-            service.clickFixedPosition()
+            clickSendLightButton(service)
             handler.postDelayed({
                 if (service.allTextViewsContainText(nodeInfo.text.toString())) {
                     Log.d("Lighting", "仍在菜单中，再次点击以退出菜单")
-                    detectedTextView.text = "仍在菜单中，正在尝试退出菜单"
-                    service.clickFixedPosition()
+                    textViewInfo.text = getString(R.string.still_in_menu)
+                    clickSendLightButton(service)
                 }
                 handler.postDelayed({
                     Log.d("Lighting", "为下一位好友送火")
-                    detectedTextView.text = "为下一位好友送火"
+                    textViewInfo.text = "为下一位好友送火"
                     clickAndCheck(service, index + 1)
                 }, 1200)
             }, 1500)
         }, 2000)
     }
 
+    private fun clickSendLightButton(service: MyAccessibilityService) {
+        val sharedPref = getSharedPreferences("SkySharedPreferences", Context.MODE_PRIVATE)
+        val xCoordinate = sharedPref.getString("xCoordinate", "")
+        val yCoordinate = sharedPref.getString("yCoordinate", "")
+        if (xCoordinate != null && yCoordinate != null) {
+            service.performClick(xCoordinate.toInt(), yCoordinate.toInt())
+        } else {
+            Log.d("Lighting", "坐标值为空！")
+        }
+    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -167,7 +191,7 @@ class FloatingWindowService : Service() {
             windowManager.removeView(floatingView)
         }
         handler.removeCallbacksAndMessages(null)
-        instance = null
+        serviceReference?.clear()
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -175,10 +199,13 @@ class FloatingWindowService : Service() {
     }
 
     companion object {
-        var instance: FloatingWindowService? = null
+        private var serviceReference: WeakReference<FloatingWindowService>? = null
+
+        val instance: FloatingWindowService?
+            get() = serviceReference?.get()
     }
 
     init {
-        instance = this
+        serviceReference = WeakReference(this)
     }
 }

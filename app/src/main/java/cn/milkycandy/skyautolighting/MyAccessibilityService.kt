@@ -1,8 +1,7 @@
-package cn.milkycandy.skyautolightinggamepad
+package cn.milkycandy.skyautolighting
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
-import android.content.Intent
 import android.graphics.Path
 import android.graphics.Rect
 import android.os.Handler
@@ -28,11 +27,9 @@ class MyAccessibilityService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        // 不需要在这里做任何事情
     }
 
     override fun onInterrupt() {
-        // 处理服务中断
     }
 
     fun logAllNodes() {
@@ -43,7 +40,7 @@ class MyAccessibilityService : AccessibilityService() {
 
         // 更新悬浮窗上的 TextView
         val detectedTexts = targetNodes.joinToString(separator = "\n") { it.text.toString() }
-        FloatingWindowService.instance?.detectedTextView?.text = detectedTexts
+        FloatingWindowService.instance?.textViewInfo?.text = detectedTexts
     }
 
     private fun findTargetNodes(node: AccessibilityNodeInfo) {
@@ -51,7 +48,10 @@ class MyAccessibilityService : AccessibilityService() {
             val text = node.text.toString()
             if (text != "挚友" && text != "好友") {
                 targetNodes.add(node)
-                Log.d("AccessibilityNode", "Class: ${node.className}, Text: ${node.text}, Clickable: ${node.isClickable}")
+                Log.d(
+                    "AccessibilityService",
+                    "Class: ${node.className}, Text: ${node.text}, Clickable: ${node.isClickable}"
+                )
             }
         }
 
@@ -84,10 +84,6 @@ class MyAccessibilityService : AccessibilityService() {
         val centerX = bounds.right
         val centerY = (bounds.top + bounds.bottom) / 2
         performClick(centerX, centerY)
-    }
-
-    fun clickFixedPosition() {
-        performClick(1257, 320)
     }
 
     fun performClick(x: Int, y: Int): Boolean {
@@ -141,7 +137,6 @@ class MyAccessibilityService : AccessibilityService() {
 
         return true
     }
-
 
     override fun onDestroy() {
         super.onDestroy()
