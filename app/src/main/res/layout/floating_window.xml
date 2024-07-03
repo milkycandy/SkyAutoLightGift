@@ -4,11 +4,31 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/detect_button"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="开始送火" />
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/detect_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="开始送火" />
+
+        <Button
+            android:id="@+id/pressX_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="X" />
+
+        <Button
+            android:id="@+id/pressB_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="B" />
+
+    </LinearLayout>
+
+
 
     <TextView
         android:id="@+id/detected_text"

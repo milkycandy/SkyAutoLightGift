@@ -23,17 +23,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        editTextX = findViewById(R.id.editTextX)
-        editTextY = findViewById(R.id.editTextY)
-        findViewById<Button>(R.id.buttonSave).setOnClickListener {
-            saveCoordinates()
-        }
-
-        loadCoordinates()
-
         findViewById<Button>(R.id.start_button).setOnClickListener {
             // Check if coordinates are saved
-            if (loadCoordinates()) {
                 // 检查无障碍服务和悬浮窗权限是否启用
                 if (isAccessibilityServiceEnabled(this, MyAccessibilityService::class.java)) {
                     if (checkOverlayPermission()) {
@@ -58,41 +49,6 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     showAccessibilityServiceDialog()
                 }
-            } else {
-                Toast.makeText(this, getString(R.string.enter_coordinates_first), Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    // 保存送火键坐标
-    private fun saveCoordinates() {
-        val xCoordinate = editTextX.text.toString()
-        val yCoordinate = editTextY.text.toString()
-
-        if (xCoordinate.isNotEmpty() && yCoordinate.isNotEmpty()) {
-            val sharedPref = getSharedPreferences("SkySharedPreferences", Context.MODE_PRIVATE)
-            val editor = sharedPref.edit()
-            editor.putString("xCoordinate", xCoordinate)
-            editor.putString("yCoordinate", yCoordinate)
-            editor.apply()
-            Toast.makeText(this, getString(R.string.coordinate_saved), Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(this, "X和Y坐标都要输入", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    // 加载送火键坐标
-    private fun loadCoordinates(): Boolean {
-        val sharedPref = getSharedPreferences("SkySharedPreferences", Context.MODE_PRIVATE)
-        val xCoordinate = sharedPref.getString("xCoordinate", "")
-        val yCoordinate = sharedPref.getString("yCoordinate", "")
-
-        if (!xCoordinate.isNullOrEmpty() && !yCoordinate.isNullOrEmpty()) {
-            editTextX.setText(xCoordinate)
-            editTextY.setText(yCoordinate)
-            return true
-        } else {
-            return false
         }
     }
 

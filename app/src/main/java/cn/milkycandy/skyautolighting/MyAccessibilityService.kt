@@ -18,6 +18,7 @@ class MyAccessibilityService : AccessibilityService() {
 
     var targetNodes = mutableListOf<AccessibilityNodeInfo>()
     private val handler = Handler(Looper.getMainLooper())
+    var isRealTimeDisplayEnabled = false
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -30,6 +31,17 @@ class MyAccessibilityService : AccessibilityService() {
     }
 
     override fun onInterrupt() {
+    }
+
+    fun startRealTimeTextDisplay() {
+        handler.postDelayed(object : Runnable {
+            override fun run() {
+                if (isRealTimeDisplayEnabled) {
+                    logAllNodes()
+                    handler.postDelayed(this, 50) // Update 20 times per second
+                }
+            }
+        }, 50)
     }
 
     fun logAllNodes() {
@@ -62,6 +74,16 @@ class MyAccessibilityService : AccessibilityService() {
         }
     }
 
+    fun performClick(x: Int, y: Int): Boolean {
+        val path = Path().apply {
+            moveTo(x.toFloat(), y.toFloat())
+        }
+        val gestureDescription = GestureDescription.Builder()
+            .addStroke(GestureDescription.StrokeDescription(path, 0, 40))
+            .build()
+        return dispatchGesture(gestureDescription, null, null)
+    }
+
     fun clickNode(node: AccessibilityNodeInfo) {
         val bounds = Rect()
         node.getBoundsInScreen(bounds)
@@ -86,16 +108,6 @@ class MyAccessibilityService : AccessibilityService() {
         performClick(centerX, centerY)
     }
 
-    fun performClick(x: Int, y: Int): Boolean {
-        val path = Path().apply {
-            moveTo(x.toFloat(), y.toFloat())
-        }
-        val gestureDescription = GestureDescription.Builder()
-            .addStroke(GestureDescription.StrokeDescription(path, 0, 40))
-            .build()
-        return dispatchGesture(gestureDescription, null, null)
-    }
-
     fun checkIfOnlyText(text: String): Boolean {
         val rootNode = rootInActiveWindow ?: return false
         val textViewCounts = mutableMapOf<String, Int>()
@@ -106,7 +118,9 @@ class MyAccessibilityService : AccessibilityService() {
     private fun countTextViews(node: AccessibilityNodeInfo, counts: MutableMap<String, Int>) {
         if (node.className == "android.widget.TextView" && node.text != null) {
             val text = node.text.toString()
-            counts[text] = counts.getOrDefault(text, 0) + 1
+            if (!text.contains("心火")) {
+                counts[text] = counts.getOrDefault(text, 0) + 1
+            }
         }
 
         for (i in 0 until node.childCount) {
@@ -123,19 +137,31 @@ class MyAccessibilityService : AccessibilityService() {
 
     private fun checkAllTextViews(node: AccessibilityNodeInfo, text: String): Boolean {
         if (node.className == "android.widget.TextView" && node.text != null) {
-            if (!node.text.toString().contains(text)) {
-                return false
-            }
+            return node.text.toString().contains(text)
+        }
+        return false
+    }
+
+    fun hasExactlyTwoTextViews(): Boolean {
+        val rootNode = rootInActiveWindow ?: return false
+        val textViewCount = countTextViews(rootNode)
+        return textViewCount == 2
+    }
+
+    private fun countTextViews(node: AccessibilityNodeInfo): Int {
+        var count = 0
+
+        if (node.className == "android.widget.TextView") {
+            count++
         }
 
         for (i in 0 until node.childCount) {
-            val childNode = node.getChild(i)
-            if (childNode != null && !checkAllTextViews(childNode, text)) {
-                return false
+            node.getChild(i)?.let { childNode ->
+                count += countTextViews(childNode)
             }
         }
 
-        return true
+        return count
     }
 
     override fun onDestroy() {
